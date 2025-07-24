@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCorners } from '@dnd-kit/core';
-import { ChevronDown, Search, Bell, Plus, CheckCircle, Clock, List, Menu } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
+import {  Bell, Plus, CheckCircle, Clock, List} from 'lucide-react';
 import { getTasksByStatus } from '@/libs/task';
 import { Column, ColumnId, Task } from '@/model/task';
 import StatCard from '@/components/StartCard';
 import KanbanColumn from '@/components/KanbanColumn';
 import KanbanTaskCard from '@/components/KanbanTaskCard';
+import TaskModal from './TaskModal';
 
 
 // Mock Data
@@ -23,7 +23,6 @@ const initialTasks:Array<Task> = [
 export default function Dashboard(){
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
     const [columns, setColumns] = useState<Record<ColumnId, Column>>(getTasksByStatus(initialTasks));
-    const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [activeTask, setActiveTask] = useState<Task | null>(null);
   
     const allTasks = Object.values(columns).flatMap(col => col.tasks);
@@ -56,39 +55,22 @@ export default function Dashboard(){
   
     return (
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-        <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
-          <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <header className="bg-white border-b border-gray-200 p-4 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center">
-                <button onClick={() => setSidebarOpen(true)} className="md:hidden mr-4 text-gray-600"><Menu size={24} /></button>
-                <div className="relative hidden md:block"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} /><input type="text" placeholder="Search tasks..." className="w-full md:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" /></div>
-              </div>
-              <div className="flex items-center space-x-5">
-                <button className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full"><Bell size={22} /></button>
-                <div className="flex items-center space-x-2"><img src="https://placehold.co/40x40/6366f1/ffffff?text=A" alt="User Avatar" className="w-10 h-10 rounded-full" /><div><p className="font-semibold text-sm text-gray-800">Admin User</p><p className="text-xs text-gray-500">admin@example.com</p></div><ChevronDown size={18} className="text-gray-500 cursor-pointer" /></div>
-              </div>
-            </header>
-  
-            <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-              <div className="flex items-center justify-between mb-6"><h1 className="text-3xl font-bold text-gray-800">Board View</h1><button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"><Plus size={20} className="mr-2" /> Add New Task</button></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <StatCard icon={<List size={24} className="text-blue-600" />} title="Total Tasks" value={allTasks.length} color="bg-blue-100" />
-                <StatCard icon={<CheckCircle size={24} className="text-green-600" />} title="Completed" value={completedTasks} color="bg-green-100" />
-                <StatCard icon={<Clock size={24} className="text-yellow-600" />} title="Pending" value={pendingTasks} color="bg-yellow-100" />
-                <StatCard icon={<Bell size={24} className="text-red-600" />} title="Overdue" value={overdueTasks} color="bg-red-100" />
-              </div>
-              <div className="flex flex-col md:flex-row gap-6">
-                  {Object.values(columns).map((column) => (
-                      <KanbanColumn key={column.id} column={column} tasks={column.tasks} />
-                  ))}
-              </div>
-            </main>
-          </div>
-          <DragOverlay>
-              {activeTask ? <KanbanTaskCard task={activeTask} isDragging /> : null}
-          </DragOverlay>
+        <div className="flex items-center justify-between mb-6"><h1 className="text-3xl font-bold text-gray-800">Board View</h1><button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"><Plus size={20} className="mr-2" /> Add New Task</button></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <StatCard icon={<List size={24} className="text-blue-600" />} title="Total Tasks" value={allTasks.length} color="bg-blue-100" />
+          <StatCard icon={<CheckCircle size={24} className="text-green-600" />} title="Completed" value={completedTasks} color="bg-green-100" />
+          <StatCard icon={<Clock size={24} className="text-yellow-600" />} title="Pending" value={pendingTasks} color="bg-yellow-100" />
+          <StatCard icon={<Bell size={24} className="text-red-600" />} title="Overdue" value={overdueTasks} color="bg-red-100" />
         </div>
+        <div className="flex flex-col md:flex-row gap-6">
+            {Object.values(columns).map((column) => (
+                <KanbanColumn key={column.id} column={column} tasks={column.tasks} />
+            ))}
+        </div>
+        <DragOverlay>
+              {activeTask ? <KanbanTaskCard task={activeTask} isDragging /> : null}
+        </DragOverlay>
+        <TaskModal/>
       </DndContext>
     );
 }
