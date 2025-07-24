@@ -1,24 +1,27 @@
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
+import clsx from 'clsx';
 
 type ModalProps = {
     children:React.ReactNode;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    className?:string;
 };
 
 export default function Modal({
   children,
   open,
   setOpen,
+  className,
 }:ModalProps){
+
+  const finalClassName = clsx(
+    'relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 w-full sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95',
+    !/\bsm:max-w-\w+\b/.test(className ?? '') && 'sm:max-w-sm',
+    className
+  );
   return (
     <div>
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
-      >
-        Open dialog
-      </button>
       <Dialog open={open} onClose={setOpen} className="relative z-10">
         <DialogBackdrop
           transition
@@ -26,10 +29,10 @@ export default function Modal({
         />
 
         <div className="fixed inset-0 z-51 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
             <DialogPanel
               transition
-              className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-sm sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+              className={finalClassName}
             >
               {children}
             </DialogPanel>

@@ -24,7 +24,7 @@ export default function Dashboard(){
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
     const [columns, setColumns] = useState<Record<ColumnId, Column>>(getTasksByStatus(initialTasks));
     const [activeTask, setActiveTask] = useState<Task | null>(null);
-  
+    const [open, setOpen] = useState(true)
     const allTasks = Object.values(columns).flatMap(col => col.tasks);
   
     function handleDragStart(event: DragStartEvent) {
@@ -55,7 +55,14 @@ export default function Dashboard(){
   
     return (
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-        <div className="flex items-center justify-between mb-6"><h1 className="text-3xl font-bold text-gray-800">Board View</h1><button className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"><Plus size={20} className="mr-2" /> Add New Task</button></div>
+        <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Board View</h1>
+        <button 
+        onClick={()=>setOpen(true)}
+        className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+          <Plus size={20} className="mr-2" /> Add New Task
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <StatCard icon={<List size={24} className="text-blue-600" />} title="Total Tasks" value={allTasks.length} color="bg-blue-100" />
           <StatCard icon={<CheckCircle size={24} className="text-green-600" />} title="Completed" value={completedTasks} color="bg-green-100" />
@@ -70,7 +77,7 @@ export default function Dashboard(){
         <DragOverlay>
               {activeTask ? <KanbanTaskCard task={activeTask} isDragging /> : null}
         </DragOverlay>
-        <TaskModal/>
+        <TaskModal open={open} setOpen={setOpen}/>
       </DndContext>
     );
 }

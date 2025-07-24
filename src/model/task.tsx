@@ -15,3 +15,9 @@ export type Column = {
     name: string;
     tasks: Task[];
 };
+
+export interface TaskForm{
+    priority: Priority | '';
+    description: string | '';
+    datetime: string | '';
+}
