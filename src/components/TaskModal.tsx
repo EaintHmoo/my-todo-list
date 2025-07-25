@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
-import { TaskForm } from '@/model/task';
+import { Priority, Task, TaskForm } from '@/model/task';
 
 type TaskModalProps = {
+  handleAddNewTask: (newTask:Task)=>void;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -14,12 +15,15 @@ const PRIORITIES = [
   'Low'
 ]
 
-export default function TaskModal({open,setOpen}:TaskModalProps) {
-  const [formData, setFormData] = useState<TaskForm>({
-    priority: '',
-    description: '',
-    datetime: '',
-  });
+export default function TaskModal({handleAddNewTask,open,setOpen}:TaskModalProps) {
+  const defaultFormData: TaskForm = {
+      id: '',
+      priority: '',
+      description: '',
+      dueDate: '',
+      status: 'not_started',
+    };
+  const [formData, setFormData] = useState<TaskForm>(defaultFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -31,16 +35,27 @@ export default function TaskModal({open,setOpen}:TaskModalProps) {
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent page reload
-    console.log('Form submitted:', formData);
-    // You can send `formData` to an API here
+    e.preventDefault();
+  
+    // Validate required fields
+    if (!formData.description || !formData.priority) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+  
+    const newTask: Task = {
+      id: formData.id || crypto.randomUUID(),
+      name: formData.description,
+      dueDate: new Date().toISOString().slice(0, 10),
+      priority: formData.priority as Priority,
+      status: formData.status,
+    };
+  
+    handleAddNewTask(newTask);
     setOpen(false);
-    setFormData({
-      priority: '',
-      description: '',
-      datetime: '',
-    });
+    setFormData(defaultFormData);
   };
+  
 
 
   return (

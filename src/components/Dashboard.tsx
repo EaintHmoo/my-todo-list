@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCorners } from '@dnd-kit/core';
 import {  Bell, Plus, CheckCircle, Clock, List} from 'lucide-react';
 import { getTasksByStatus } from '@/libs/task';
-import { Column, ColumnId, Task } from '@/model/task';
+import { Column, ColumnId, Task, TaskForm } from '@/model/task';
 import StatCard from '@/components/StartCard';
 import KanbanColumn from '@/components/KanbanColumn';
 import KanbanTaskCard from '@/components/KanbanTaskCard';
@@ -26,7 +26,8 @@ export default function Dashboard(){
     const [activeTask, setActiveTask] = useState<Task | null>(null);
     const [open, setOpen] = useState(true)
     const allTasks = Object.values(columns).flatMap(col => col.tasks);
-  
+    
+    
     function handleDragStart(event: DragStartEvent) {
       setActiveTask(event.active.data.current?.task);
     }
@@ -48,6 +49,13 @@ export default function Dashboard(){
         }
       }
     }
+
+    const handleAddNewTask = (newTask: Task) => {
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      setColumns(getTasksByStatus(updatedTasks));
+    };
+    
   
     const completedTasks = allTasks.filter(t => t.status === 'done').length;
     const pendingTasks = allTasks.filter(t => t.status !== 'done').length;
@@ -77,7 +85,7 @@ export default function Dashboard(){
         <DragOverlay>
               {activeTask ? <KanbanTaskCard task={activeTask} isDragging /> : null}
         </DragOverlay>
-        <TaskModal open={open} setOpen={setOpen}/>
+        <TaskModal handleAddNewTask={handleAddNewTask} open={open} setOpen={setOpen}/>
       </DndContext>
     );
 }

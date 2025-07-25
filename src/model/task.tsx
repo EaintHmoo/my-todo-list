@@ -17,7 +17,9 @@ export type Column = {
 };
 
 export interface TaskForm{
+    id: string |'';
     priority: Priority | '';
     description: string | '';
-    datetime: string | '';
+    dueDate: string | '';
+    status: ColumnId;
 }
