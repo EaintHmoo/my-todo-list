@@ -24,10 +24,11 @@ export default function Dashboard(){
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
     const [columns, setColumns] = useState<Record<ColumnId, Column>>(getTasksByStatus(initialTasks));
     const [activeTask, setActiveTask] = useState<Task | null>(null);
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const allTasks = Object.values(columns).flatMap(col => col.tasks);
-    
-    
+    const [editTask, setEditTask] = useState<Task | null>(null);
+    const [deleteTask, setDeleteTask] = useState<Task | null>(null);
+
     function handleDragStart(event: DragStartEvent) {
       setActiveTask(event.active.data.current?.task);
     }
@@ -56,6 +57,15 @@ export default function Dashboard(){
       setColumns(getTasksByStatus(updatedTasks));
     };
     
+    const onEditTask = (task: Task) => {
+      setOpen(true);
+      setEditTask(task);
+    }
+
+    const onDeleteTask = (task: Task) => {
+      console.log('onDeleteTask');
+      setDeleteTask(task);
+    }
   
     const completedTasks = allTasks.filter(t => t.status === 'done').length;
     const pendingTasks = allTasks.filter(t => t.status !== 'done').length;
@@ -77,15 +87,15 @@ export default function Dashboard(){
           <StatCard icon={<Clock size={24} className="text-yellow-600" />} title="Pending" value={pendingTasks} color="bg-yellow-100" />
           <StatCard icon={<Bell size={24} className="text-red-600" />} title="Overdue" value={overdueTasks} color="bg-red-100" />
         </div>
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-row gap-6 overflow-x-auto">
             {Object.values(columns).map((column) => (
-                <KanbanColumn key={column.id} column={column} tasks={column.tasks} />
+                <KanbanColumn onEdit={onEditTask} onDelete={onDeleteTask} key={column.id} column={column} tasks={column.tasks} />
             ))}
         </div>
         <DragOverlay>
-              {activeTask ? <KanbanTaskCard task={activeTask} isDragging /> : null}
+              {activeTask ? <KanbanTaskCard onEdit={onEditTask} onDelete={onDeleteTask} task={activeTask} isDragging /> : null}
         </DragOverlay>
-        <TaskModal handleAddNewTask={handleAddNewTask} open={open} setOpen={setOpen}/>
+        <TaskModal editTask={editTask} handleAddNewTask={handleAddNewTask} open={open} setOpen={setOpen}/>
       </DndContext>
     );
 }
