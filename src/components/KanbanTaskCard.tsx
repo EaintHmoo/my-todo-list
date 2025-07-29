@@ -4,18 +4,23 @@ import { PriorityBadge } from "./PriorityBadge";
 import { useDraggable } from '@dnd-kit/core';
 import { Calendar, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
+import { useTask } from "./TaskProvider";
 
 interface KanbanTaskCardProps{
     task: Task;
     isDragging?: boolean;
-    onEdit: (task: Task) => void;
-    onDelete: (task: Task) => void;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function KanbanTaskCard({ task, isDragging, onEdit,onDelete }: KanbanTaskCardProps) {
+export default function KanbanTaskCard({ task, isDragging, setOpen }: KanbanTaskCardProps) {
     const [hasMounted, setHasMounted] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false); // 1. State for dropdown visibility
     const menuRef = useRef<HTMLDivElement>(null); // Ref for the menu container
+
+    const {
+    setEditTask,
+    setDeleteTask,
+    } = useTask();
 
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: task.id,
@@ -55,13 +60,14 @@ export default function KanbanTaskCard({ task, isDragging, onEdit,onDelete }: Ka
 
     const handleEdit = (e: React.MouseEvent) => {
         console.log("Editing task:", task.id);
-        onEdit(task);
+        setEditTask(task);
+        setOpen(true);
         setIsMenuOpen(false); // Close menu after action
     };
 
     const handleDelete = (e: React.MouseEvent) => {
         console.log("Deleting task:", task.id);
-        onDelete(task);
+        setDeleteTask(task);
         setIsMenuOpen(false); // Close menu after action
     };
 

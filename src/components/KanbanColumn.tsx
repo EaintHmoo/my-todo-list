@@ -4,18 +4,16 @@ import { ColumnId, Task } from "@/model/task";
 import KanbanTaskCard from "./KanbanTaskCard";
 import { useDroppable } from '@dnd-kit/core';
 
-
 interface KanbanColumnProps{
     tasks: Array<Task>;
     column: {
         id: ColumnId;
         name: string;
     };
-    onEdit: (task: Task) => void;
-    onDelete: (task: Task) => void;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function KanbanColumn({ column, tasks, onEdit, onDelete }: KanbanColumnProps) {
+export default function KanbanColumn({ column, tasks, setOpen }: KanbanColumnProps) {
     const { setNodeRef, isOver } = useDroppable({ id: column.id });
     const columnStyles = {
         not_started: 'border-t-4 border-t-gray-400',
@@ -28,7 +26,7 @@ export default function KanbanColumn({ column, tasks, onEdit, onDelete }: Kanban
             <h3 className={`text-lg font-semibold text-gray-700 mb-4 pb-2 ${columnStyles[column.id]}`}>{column.name} ({tasks.length})</h3>
             <div className="space-y-3">
                 {tasks.map(task => (
-                    <KanbanTaskCard onEdit={onEdit} onDelete={onDelete} key={task.id} task={task} />
+                    <KanbanTaskCard setOpen={setOpen} key={task.id} task={task} />
                 ))}
             </div>
         </div>
