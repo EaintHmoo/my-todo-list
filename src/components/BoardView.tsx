@@ -17,7 +17,7 @@ import TaskModal from "./TaskModal";
 import { useTask } from "./TaskProvider";
 import DeleteModal from "./DeleteModal";
 
-export default function Dashboard() {
+export default function BoardView() {
   const {
     tasks,
     onEdit,
@@ -123,6 +123,7 @@ export default function Dashboard() {
             task={activeTask}
             isDragging
             setOpen={setOpen}
+            setOpenDelete={setOpenDelete}
           />
         ) : null}
       </DragOverlay>
