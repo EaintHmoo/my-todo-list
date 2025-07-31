@@ -18,8 +18,8 @@ interface TaskState {
   
 
 interface PublicTaskActions {
-    onEdit: (task?: Task) => void;
-    onDelete: (task?: Task) => void;
+    onEdit: (task: Task) => void;
+    onDelete: (task: Task) => void;
     onAdd: (task?: Task) => void;
     setEditTask: (task?: Task) => void;
     setDeleteTask: (task?: Task) => void;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { Priority, Task, TaskForm } from '@/model/task';
@@ -13,26 +13,40 @@ const PRIORITIES = [
   'High',
   'Medium',
   'Low'
-]
+];
 
 export default function TaskModal({open,setOpen}:TaskModalProps) {
     const {
       editTask,
       onAdd,
+      onEdit,
       clearEditTask,
       clearDeleteTask,
     } = useTask();
+    
 
   const defaultFormData: TaskForm = {
-      id: editTask?.id || '',
-      priority: editTask?.priority || '',
-      description: editTask?.name || '',
-      dueDate: editTask?.dueDate || '',
-      status: editTask?.status || 'not_started',
+      id: '',
+      priority: '',
+      description: '',
+      dueDate: '',
+      status: 'not_started',
   };
   
   const [formData, setFormData] = useState<TaskForm>(defaultFormData);
 
+  useEffect(() => {
+    if (editTask) {
+      setFormData({
+        id: editTask.id || '',
+        priority: editTask.priority || '',
+        description: editTask.name || '',
+        dueDate: editTask.dueDate || '',
+        status: editTask.status || 'not_started',
+      });
+    }
+  }, [editTask]);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -50,15 +64,29 @@ export default function TaskModal({open,setOpen}:TaskModalProps) {
       return;
     }
   
-    const newTask: Task = {
-      id: formData.id || crypto.randomUUID(),
-      name: formData.description,
-      dueDate: new Date().toISOString().slice(0, 10),
-      priority: formData.priority as Priority,
-      status: formData.status,
-    };
-  
-    onAdd(newTask);
+    if(editTask)
+    {
+      const updatedTask: Task = {
+        id: editTask.id,
+        name: formData.description,
+        dueDate: editTask.dueDate,
+        priority: formData.priority as Priority,
+        status: editTask.status,
+      };
+    
+      onEdit(updatedTask);
+    }else{
+      const newTask: Task = {
+        id: formData.id || crypto.randomUUID(),
+        name: formData.description,
+        dueDate: new Date().toISOString().slice(0, 10),
+        priority: formData.priority as Priority,
+        status: formData.status,
+      };
+    
+      onAdd(newTask);
+    }
+    
     handleClear();
     setFormData(defaultFormData);
   };
@@ -89,7 +117,7 @@ export default function TaskModal({open,setOpen}:TaskModalProps) {
             {PRIORITIES.map((item, index) => (
               <option key={index} value={item}>
                 {item}
-              </option>
+            </option>
             ))}
           </select>
             <ChevronDownIcon

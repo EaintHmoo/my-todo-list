@@ -15,6 +15,7 @@ import KanbanColumn from "@/components/KanbanColumn";
 import KanbanTaskCard from "@/components/KanbanTaskCard";
 import TaskModal from "./TaskModal";
 import { useTask } from "./TaskProvider";
+import DeleteModal from "./DeleteModal";
 
 export default function Dashboard() {
   const {
@@ -24,6 +25,7 @@ export default function Dashboard() {
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const columns: Record<ColumnId, Column> = useMemo(
     () => getTasksByStatus(tasks),
@@ -110,6 +112,7 @@ export default function Dashboard() {
             column={column}
             tasks={column.tasks}
             setOpen={setOpen}
+            setOpenDelete={setOpenDelete}
           />
         ))}
       </div>
@@ -128,6 +131,10 @@ export default function Dashboard() {
         open={open}
         setOpen={setOpen}
       />
+
+      <DeleteModal
+      open={openDelete}
+      setOpen={setOpenDelete}/>
     </DndContext>
   );
 }

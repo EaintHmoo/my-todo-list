@@ -11,9 +11,10 @@ interface KanbanColumnProps{
         name: string;
     };
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenDelete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function KanbanColumn({ column, tasks, setOpen }: KanbanColumnProps) {
+export default function KanbanColumn({ column, tasks, setOpen, setOpenDelete }: KanbanColumnProps) {
     const { setNodeRef, isOver } = useDroppable({ id: column.id });
     const columnStyles = {
         not_started: 'border-t-4 border-t-gray-400',
@@ -26,7 +27,7 @@ export default function KanbanColumn({ column, tasks, setOpen }: KanbanColumnPro
             <h3 className={`text-lg font-semibold text-gray-700 mb-4 pb-2 ${columnStyles[column.id]}`}>{column.name} ({tasks.length})</h3>
             <div className="space-y-3">
                 {tasks.map(task => (
-                    <KanbanTaskCard setOpen={setOpen} key={task.id} task={task} />
+                    <KanbanTaskCard setOpen={setOpen} setOpenDelete={setOpenDelete} key={task.id} task={task} />
                 ))}
             </div>
         </div>

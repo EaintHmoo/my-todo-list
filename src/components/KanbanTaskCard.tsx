@@ -10,9 +10,10 @@ interface KanbanTaskCardProps{
     task: Task;
     isDragging?: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenDelete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function KanbanTaskCard({ task, isDragging, setOpen }: KanbanTaskCardProps) {
+export default function KanbanTaskCard({ task, isDragging, setOpen, setOpenDelete }: KanbanTaskCardProps) {
     const [hasMounted, setHasMounted] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false); // 1. State for dropdown visibility
     const menuRef = useRef<HTMLDivElement>(null); // Ref for the menu container
@@ -61,14 +62,15 @@ export default function KanbanTaskCard({ task, isDragging, setOpen }: KanbanTask
     const handleEdit = (e: React.MouseEvent) => {
         console.log("Editing task:", task.id);
         setEditTask(task);
-        setOpen(true);
         setIsMenuOpen(false); // Close menu after action
+        setOpen(true);
     };
 
     const handleDelete = (e: React.MouseEvent) => {
         console.log("Deleting task:", task.id);
         setDeleteTask(task);
         setIsMenuOpen(false); // Close menu after action
+        setOpenDelete(true);
     };
 
     return (
