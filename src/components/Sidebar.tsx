@@ -20,7 +20,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps)
         <>
             <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/50 z-10 md:hidden transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
             <aside className={`bg-white border-r border-gray-200 flex flex-col flex-shrink-0 fixed h-full w-64 z-10 transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="p-6 flex items-center justify-between border-b border-gray-200">
+                <div className="py-4 px-6 h-[75px] flex items-center justify-between border-b border-gray-200">
                     <div className="flex items-center space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-indigo-600"><path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" /></svg>
                         <h1 className="text-xl font-bold text-gray-800">TaskFlow</h1>

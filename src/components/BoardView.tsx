@@ -19,6 +19,7 @@ import DeleteModal from "./DeleteModal";
 
 export default function BoardView() {
   const {
+    boardTitle,
     tasks,
     onEdit,
   } = useTask();
@@ -69,7 +70,7 @@ export default function BoardView() {
       collisionDetection={closestCorners}
     >
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Board View</h1>
+        <h1 className="text-3xl font-bold text-gray-800">{boardTitle}</h1>
         <button
           onClick={() => setOpen(true)}
           className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
