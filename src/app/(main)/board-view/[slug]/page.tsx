@@ -6,10 +6,10 @@ import { Metadata } from 'next';
 export async function generateMetadata({
   params,
 }: {
-  params: { title: string };
+  params: { slug: string };
 }): Promise<Metadata> {
   return {
-    title: `Board View: ${params.title}`,
+    title: `Board View: ${params.slug}`,
     description: 'This is todo list admin dashboard',
   };
 }
