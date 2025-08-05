@@ -4,6 +4,7 @@ import { ChevronDown, Search, Bell, Menu } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Image from 'next/image';
 import avatorImage from '@/images/avatar.jpg';
+import { BoardProvider } from '@/components/BoardContext';
 
 export default function RootLayout({
   children,
@@ -13,6 +14,7 @@ export default function RootLayout({
   const [isSidebarOpen, setSidebarOpen] = useState(false);
     
   return (
+    <BoardProvider>
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
         <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -38,5 +40,6 @@ export default function RootLayout({
         </main>
         </div>
     </div>
+    </BoardProvider>
   );
 }

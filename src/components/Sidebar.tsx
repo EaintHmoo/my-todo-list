@@ -1,5 +1,6 @@
 import { LayoutGrid, CheckCircle, Clock, List, Settings, Projector,Columns3, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
+import { useBoard } from './BoardContext';
 
 type SidebarProps = {
     isSidebarOpen: boolean;
@@ -7,13 +8,40 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps){
+    const {boards} = useBoard();
     const menuItems = [
-        { icon: <LayoutGrid size={20} />, name: 'Home', link: '/' },
-        { icon: <Columns3 size={20} />, name: 'Board View', link: '/board-view/title' },
-        { icon: <List size={20} />, name: 'All Tasks', link: '/' },
-        { icon: <CheckCircle size={20} />, name: 'Completed', link: '/' },
-        { icon: <Clock size={20} />, name: 'Pending', link: '/' },
-    ];
+        // Home Section
+        {
+          icon: <LayoutGrid size={20} />,
+          name: 'Home',
+          link: '/',
+        },
+      
+        // Dynamic Board Items
+        ...boards.map((board) => ({
+          icon: <Columns3 size={20} />,
+          name: board.title,
+          link: `/board-view/${board.id}`,
+        })),
+      
+        // Tasks Section
+        {
+          icon: <List size={20} />,
+          name: 'All Tasks',
+          link: '/',
+        },
+        {
+          icon: <CheckCircle size={20} />,
+          name: 'Completed',
+          link: '/',
+        },
+        {
+          icon: <Clock size={20} />,
+          name: 'Pending',
+          link: '/',
+        },
+      ];
+
     const projects = ['Website Redesign', 'Mobile App Launch', 'Marketing Campaign'];
 
     return (

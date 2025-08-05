@@ -27,7 +27,6 @@ export default function BoardView() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  console.log(tasks);
   const columns: Record<ColumnId, Column> = useMemo(
     () => getTasksByStatus(tasks),
     [tasks]
