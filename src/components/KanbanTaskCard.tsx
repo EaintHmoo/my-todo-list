@@ -4,7 +4,7 @@ import { PriorityBadge } from "./PriorityBadge";
 import { useDraggable } from '@dnd-kit/core';
 import { Calendar, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from "react";
-import { useTask } from "./TaskProvider";
+import { useTask } from "./TaskContext";
 
 interface KanbanTaskCardProps{
     task: Task;

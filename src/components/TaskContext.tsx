@@ -3,7 +3,7 @@
 import { Task } from "@/model/task";
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { doc, getDocs, setDoc, onSnapshot, collection } from "firebase/firestore";
+import { doc, getDocs, setDoc, onSnapshot, collection, deleteDoc } from "firebase/firestore";
 import { db } from "@/libs/firebase";
 
 interface TaskState {
@@ -78,15 +78,15 @@ function taskReducer(state: TaskState, action: Action): TaskState {
 export function TaskProvider({
   children,
   boardId,
-  initialBoardTitle = "",
+  boardTitle,
 }: {
   children: React.ReactNode,
   boardId: string,
-  initialBoardTitle?: string
+  boardTitle:string,
 }) {
   let [state, dispatch] = useReducer(taskReducer, {
     boardId,
-    boardTitle: initialBoardTitle,
+    boardTitle,
     tasks: [],
     editTask: null,
     deleteTask: null,
@@ -97,17 +97,36 @@ export function TaskProvider({
   let actions = useMemo<PublicTaskActions>(() => {
     return {
       onEdit(task) {
-        if (task) dispatch({ type: ActionKind.EDIT, payload: task });
+        if (!task?.id) return;
+      
+        dispatch({ type: ActionKind.EDIT, payload: task });
+      
+        const taskRef = doc(db, "boards", boardId, "tasks", task.id);
+        setDoc(taskRef, task, { merge: true }); // merge ensures partial updates won't overwrite
       },
       onDelete(task) {
-        if (task) dispatch({ type: ActionKind.DELETE, payload: task });
-      },
+        if (!task?.id) return;
+      
+        dispatch({ type: ActionKind.DELETE, payload: task });
+      
+        const taskRef = doc(db, "boards", boardId, "tasks", task.id);
+        deleteDoc(taskRef);
+      },      
       onAdd(task) {
         if (!task.id) task.id = uuidv4();
         dispatch({ type: ActionKind.ADD, payload: task });
-
+      
+        const boardDocRef = doc(db, "boards", boardId);
         const taskRef = doc(db, "boards", boardId, "tasks", task.id);
+        // Ensure board document exists
+        setDoc(boardDocRef, { title: boardTitle }, { merge: true });
+        // Save the task
         setDoc(taskRef, task);
+      },
+      async createBoard(title: string) {
+        const boardId = uuidv4();
+        const boardRef = doc(db, "boards", boardId); // use custom ID here
+        await setDoc(boardRef, { title });
       },
       setEditTask(task) {
         if (task) dispatch({ type: ActionKind.SET_EDIT_TASK, payload: task });
@@ -122,7 +141,7 @@ export function TaskProvider({
         dispatch({ type: ActionKind.SET_DELETE_TASK, payload: null });
       },
     };
-  }, [boardId]);
+  }, [boardId,boardTitle]);
 
   let api = useMemo<TaskAPI>(() => ({ ...state, ...actions }), [state, actions]);
 

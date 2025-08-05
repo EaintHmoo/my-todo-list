@@ -14,7 +14,7 @@ import StatCard from "@/components/StartCard";
 import KanbanColumn from "@/components/KanbanColumn";
 import KanbanTaskCard from "@/components/KanbanTaskCard";
 import TaskModal from "./TaskModal";
-import { useTask } from "./TaskProvider";
+import { useTask } from "./TaskContext";
 import DeleteModal from "./DeleteModal";
 
 export default function BoardView() {
@@ -27,7 +27,7 @@ export default function BoardView() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-
+  console.log(tasks);
   const columns: Record<ColumnId, Column> = useMemo(
     () => getTasksByStatus(tasks),
     [tasks]

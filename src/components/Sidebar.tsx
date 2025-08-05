@@ -8,7 +8,7 @@ type SidebarProps = {
 
 export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps){
     const menuItems = [
-        { icon: <LayoutGrid size={20} />, name: 'Dashboard', link: '/' },
+        { icon: <LayoutGrid size={20} />, name: 'Home', link: '/' },
         { icon: <Columns3 size={20} />, name: 'Board View', link: '/board-view/title' },
         { icon: <List size={20} />, name: 'All Tasks', link: '/' },
         { icon: <CheckCircle size={20} />, name: 'Completed', link: '/' },
