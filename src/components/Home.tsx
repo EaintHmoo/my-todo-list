@@ -1,6 +1,6 @@
 "use client"
 import BoardCard from '@/components/BoardCard';
-import { useBoard } from '@/components/BoardContext';
+import { useBoard } from '@/store/BoardContext';
 import Head from 'next/head';
 import { useState } from 'react';
 import BoardModal from './BoardModal';

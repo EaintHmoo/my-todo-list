@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { Priority, Task, TaskForm } from '@/model/task';
-import { useTask } from './TaskContext';
+import { useTask } from '@/store/TaskContext';
 
 type TaskModalProps = {
   open: boolean;

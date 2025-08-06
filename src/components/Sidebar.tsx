@@ -1,5 +1,5 @@
 import { LayoutGrid, CheckCircle, Clock, List, Settings, Projector,Columns3, ChevronRight, X } from 'lucide-react';
-import { useBoard } from './BoardContext';
+import { useBoard } from '../store/BoardContext';
 import SidebarMenuItem from './SideBarMenuItem';
 
 

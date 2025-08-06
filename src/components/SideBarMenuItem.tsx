@@ -23,7 +23,7 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
     const menuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = pathname === item.link;
-
+    console.log('inside sidebarmenu ', item)
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -56,6 +56,12 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
         };
     }, [isRenameOpen]);
 
+    useEffect(() => {
+        if (isRenameOpen) {
+          setBoardTitle(item.name);
+        }
+      }, [isRenameOpen, item.name]);
+
     const handleMenuToggle = (e: React.MouseEvent) => {
         setIsMenuOpen(prev => !prev);
     };
@@ -65,15 +71,19 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
         setIsRenameOpen(true);
     };
 
-    const handleDelete = (boardId:string) => {
-        deleteBoard(boardId)
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!item.boardId) return;
+        deleteBoard(item.boardId)
         setIsMenuOpen(false);
     };
 
     const handleRename = (e: React.MouseEvent) => {
-        editBoard(item.boardId,boardTitle)
+        e.preventDefault();
+        if (!item.boardId) return;
+        editBoard(item.boardId, boardTitle);
         setIsRenameOpen(false);
-    }
+      };
     return (
         <div
             className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors ${
@@ -107,7 +117,7 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
                     </li>
                     <li>
                         <button
-                        onClick={()=>handleDelete(item.boardId)}
+                        onClick={handleDelete}
                         className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                         <Trash2 size={14} className="mr-3" />
@@ -124,7 +134,7 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
             isRenameOpen && (
             <div ref={menuRef} className="relative">
                 <div className="absolute flex gap-1 font-normal right-[-48] mt-1 p-1 w-64 bg-white rounded-md shadow-xl z-20 border border-gray-100">
-                    <input id="title" defaultValue={boardTitle} onChange={(e)=>setBoardTitle(e.target.value)} type="text" name="title" placeholder="Rename title" className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                    <input id="title" value={boardTitle} onChange={(e)=>setBoardTitle(e.target.value)} type="text" name="title" placeholder="Rename title" className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                     <button
                     onClick={handleRename}
                     className="p-1 text-gray-500 hover:bg-gray-200 rounded opacity-100 transition-opacity"

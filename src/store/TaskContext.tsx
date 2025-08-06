@@ -1,49 +1,12 @@
 "use client";
 
-import { Task } from "@/model/task";
+import { Action, ActionKind, PublicTaskActions, TaskAPI, TaskState } from "@/model/task";
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { doc, getDocs, setDoc, onSnapshot, collection, deleteDoc } from "firebase/firestore";
+import { doc,onSnapshot} from "firebase/firestore";
 import { db } from "@/libs/firebase";
-import LoadingPage from "./LoadingPage";
-
-interface TaskState {
-  boardId: string;
-  boardTitle?: string;
-  tasks: Task[];
-  editTask: Task | null;
-  deleteTask: Task | null;
-  loading?: boolean;
-}
-
-type Action =
-  | { type: ActionKind.ADD; payload: Task }
-  | { type: ActionKind.EDIT; payload: Task }
-  | { type: ActionKind.DELETE; payload: Task }
-  | { type: 'SET_EDIT_TASK'; payload: Task | null }
-  | { type: 'SET_DELETE_TASK'; payload: Task | null }
-  | { type: 'RESET'; payload: TaskState };
-
-interface PublicTaskActions {
-  onEdit: (task: Task) => void;
-  onDelete: (task: Task) => void;
-  onAdd: (task: Task) => void;
-  setEditTask: (task: Task) => void;
-  setDeleteTask: (task?: Task) => void;
-  clearEditTask: () => void;
-  clearDeleteTask: () => void;
-}
-
-export type TaskAPI = TaskState & PublicTaskActions;
-
-const enum ActionKind {
-  ADD = 'ADD',
-  EDIT = 'EDIT',
-  DELETE = 'DELETE',
-  SET_EDIT_TASK = 'SET_EDIT_TASK',
-  SET_DELETE_TASK = 'SET_DELETE_TASK',
-  RESET = 'RESET',
-}
+import LoadingPage from "@/components/LoadingPage";
+import { deleteTask, fetchBoardWithTasks, storeTask, updateTask } from "@/libs/task";
 
 const TaskContext = createContext<TaskAPI | null>(null);
 
@@ -94,37 +57,20 @@ export function TaskProvider({
 
   let actions = useMemo<PublicTaskActions>(() => {
     return {
-      onEdit(task) {
+      async onEdit(task) {
         if (!task?.id) return;
-      
         dispatch({ type: ActionKind.EDIT, payload: task });
-      
-        const taskRef = doc(db, "boards", boardId, "tasks", task.id);
-        setDoc(taskRef, task, { merge: true }); // merge ensures partial updates won't overwrite
+        await updateTask(boardId,task);
       },
-      onDelete(task) {
+      async onDelete(task) {
         if (!task?.id) return;
-      
         dispatch({ type: ActionKind.DELETE, payload: task });
-      
-        const taskRef = doc(db, "boards", boardId, "tasks", task.id);
-        deleteDoc(taskRef);
+        await deleteTask(boardId,task.id);
       },      
-      onAdd(task) {
+      async onAdd(task) {
         if (!task.id) task.id = uuidv4();
         dispatch({ type: ActionKind.ADD, payload: task });
-      
-        const boardDocRef = doc(db, "boards", boardId);
-        const taskRef = doc(db, "boards", boardId, "tasks", task.id);
-        // Ensure board document exists
-        setDoc(boardDocRef, { merge: true });
-        // Save the task
-        setDoc(taskRef, task);
-      },
-      async createBoard(title: string) {
-        const boardId = uuidv4();
-        const boardRef = doc(db, "boards", boardId); // use custom ID here
-        await setDoc(boardRef, { title });
+        await storeTask(boardId,task);
       },
       setEditTask(task) {
         if (task) dispatch({ type: ActionKind.SET_EDIT_TASK, payload: task });
@@ -145,26 +91,25 @@ export function TaskProvider({
 
   useEffect(() => {
     const boardRef = doc(db, "boards", boardId);
+  
     const unsubscribe = onSnapshot(boardRef, async (snapshot) => {
       if (snapshot.exists()) {
-        const data = snapshot.data();
-        const tasksSnap = await getDocs(collection(db, "boards", boardId, "tasks"));
-        const tasks = tasksSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        dispatch({
-          type: "RESET",
-          payload: {
-            boardId: snapshot.id,
-            boardTitle: data.title || "",
-            tasks,
-            editTask: null,
-            deleteTask: null,
-          },
-        });
+        const result = await fetchBoardWithTasks(boardId);
+  
+        if (result) {
+          dispatch({
+            type: "RESET",
+            payload: {
+              ...result,
+              editTask: null,
+              deleteTask: null,
+            },
+          });
+        }
       }
       setLoaded(true);
     });
-
+  
     return () => unsubscribe();
   }, [boardId]);
 

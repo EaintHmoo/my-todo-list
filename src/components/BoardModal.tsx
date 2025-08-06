@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Modal from './Modal';
-import { useBoard } from './BoardContext';
+import { useBoard } from '../store/BoardContext';
 
 type BoardModalProps = {
   open: boolean;

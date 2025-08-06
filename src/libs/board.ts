@@ -44,11 +44,11 @@ export const updateBoard = async (boardId: string, newTitle: string):Promise<Boa
 
 
 export const deleteBoardById = async (boardId: string) => {
-      const tasksRef = collection(db, "boards", boardId, "tasks");
-      const tasksSnap = await getDocs(tasksRef);
+    const tasksRef = collection(db, "boards", boardId, "tasks");
+    const tasksSnap = await getDocs(tasksRef);
 
-      const deleteTasks = tasksSnap.docs.map((doc) => deleteDoc(doc.ref));
-      await Promise.all(deleteTasks);
+    const deleteTasks = tasksSnap.docs.map((doc) => deleteDoc(doc.ref));
+    await Promise.all(deleteTasks);
 
-      await deleteDoc(doc(db, "boards", boardId));
-  };
+    await deleteDoc(doc(db, "boards", boardId));
+};

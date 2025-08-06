@@ -1,6 +1,6 @@
 import BoardView from '@/components/BoardView';
-import { TaskProvider } from '@/components/TaskContext';
 import { getBoardById } from '@/libs/board';
+import { TaskProvider } from '@/store/TaskContext';
 import { Metadata } from 'next';
 
 export async function generateMetadata({

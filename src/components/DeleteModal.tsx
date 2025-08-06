@@ -1,6 +1,6 @@
 import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import Modal from "./Modal";
-import { useTask } from "./TaskContext";
+import { useTask } from "@/store/TaskContext";
 import { Task } from "@/model/task";
 
 type DeleteModalProps = {

@@ -4,7 +4,7 @@ import { ChevronDown, Search, Bell, Menu } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Image from 'next/image';
 import avatorImage from '@/images/avatar.jpg';
-import { BoardProvider } from '@/components/BoardContext';
+import { BoardProvider } from '@/store/BoardContext';
 
 export default function RootLayout({
   children,

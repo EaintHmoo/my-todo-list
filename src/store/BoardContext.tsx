@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 
-import LoadingPage from "./LoadingPage";
+import LoadingPage from "../components/LoadingPage";
 import { Board, BoardAction, BoardState } from "@/model/board";
 import { deleteBoardById, getBoards, storeBoard, updateBoard } from "@/libs/board";
 

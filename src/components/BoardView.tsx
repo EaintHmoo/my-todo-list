@@ -14,7 +14,7 @@ import StatCard from "@/components/StartCard";
 import KanbanColumn from "@/components/KanbanColumn";
 import KanbanTaskCard from "@/components/KanbanTaskCard";
 import TaskModal from "./TaskModal";
-import { useTask } from "./TaskContext";
+import { useTask } from '@/store/TaskContext';
 import DeleteModal from "./DeleteModal";
 
 export default function BoardView() {
