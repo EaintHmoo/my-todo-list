@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useReducer,
   ReactNode,
+  useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -17,6 +18,7 @@ import {
   collection,
 } from "firebase/firestore";
 import { db } from "@/libs/firebase";
+import LoadingPage from "./LoadingPage";
 
 // --------- Types ---------
 interface Board {
@@ -87,6 +89,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     currentBoard: null,
   });
 
+   const [loaded, setLoaded] = useState(false);
+
   // Load boards on mount
   useEffect(() => {
     const fetchBoards = async () => {
@@ -95,6 +99,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         (doc) => ({ id: doc.id, ...doc.data() } as Board)
       );
       dispatch({ type: "SET_BOARDS", payload: boards });
+      setLoaded(true);
     };
 
     fetchBoards();
@@ -136,7 +141,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <BoardContext.Provider
+    <>
+      <BoardContext.Provider
       value={{
         boards: state.boards,
         currentBoard: state.currentBoard,
@@ -148,6 +154,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     >
       {children}
     </BoardContext.Provider>
+    {!loaded && <LoadingPage/> }
+    </>
   );
 }
 

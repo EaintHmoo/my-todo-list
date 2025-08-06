@@ -5,10 +5,11 @@ import { createContext, useContext, useEffect, useMemo, useReducer, useState } f
 import { v4 as uuidv4 } from 'uuid';
 import { doc, getDocs, setDoc, onSnapshot, collection, deleteDoc } from "firebase/firestore";
 import { db } from "@/libs/firebase";
+import LoadingPage from "./LoadingPage";
 
 interface TaskState {
   boardId: string;
-  boardTitle: string;
+  boardTitle?: string;
   tasks: Task[];
   editTask: Task | null;
   deleteTask: Task | null;
@@ -78,15 +79,12 @@ function taskReducer(state: TaskState, action: Action): TaskState {
 export function TaskProvider({
   children,
   boardId,
-  boardTitle,
 }: {
   children: React.ReactNode,
   boardId: string,
-  boardTitle:string,
 }) {
   let [state, dispatch] = useReducer(taskReducer, {
     boardId,
-    boardTitle,
     tasks: [],
     editTask: null,
     deleteTask: null,
@@ -119,7 +117,7 @@ export function TaskProvider({
         const boardDocRef = doc(db, "boards", boardId);
         const taskRef = doc(db, "boards", boardId, "tasks", task.id);
         // Ensure board document exists
-        setDoc(boardDocRef, { title: boardTitle }, { merge: true });
+        setDoc(boardDocRef, { merge: true });
         // Save the task
         setDoc(taskRef, task);
       },
@@ -141,7 +139,7 @@ export function TaskProvider({
         dispatch({ type: ActionKind.SET_DELETE_TASK, payload: null });
       },
     };
-  }, [boardId,boardTitle]);
+  }, [boardId]);
 
   let api = useMemo<TaskAPI>(() => ({ ...state, ...actions }), [state, actions]);
 
@@ -170,7 +168,10 @@ export function TaskProvider({
     return () => unsubscribe();
   }, [boardId]);
 
-  return <TaskContext.Provider value={api}>{children}</TaskContext.Provider>;
+  return <>
+  <TaskContext.Provider value={api}>{children}</TaskContext.Provider>
+  { !loaded && <LoadingPage/> }
+  </>;
 }
 
 export function useTask(): TaskAPI {

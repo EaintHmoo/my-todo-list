@@ -1,6 +1,5 @@
 import BoardView from '@/components/BoardView';
 import { TaskProvider } from '@/components/TaskContext';
-import { Task } from '@/model/task';
 import { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -20,7 +19,7 @@ interface BoardPageProps {
 
 export default function BoardViewPage({ params }: BoardPageProps) {
   return (
-    <TaskProvider boardId={params.slug} boardTitle="Board View One">
+    <TaskProvider boardId={params.slug}>
       <BoardView />
     </TaskProvider>
   );
