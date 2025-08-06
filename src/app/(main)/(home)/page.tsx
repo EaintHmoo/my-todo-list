@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 
 
 export const metadata: Metadata = {
-  title: 'Borad View List',
+  title: 'Home',
   description:
     'This is board view list of home',
 }

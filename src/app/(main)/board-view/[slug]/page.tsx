@@ -1,5 +1,6 @@
 import BoardView from '@/components/BoardView';
 import { TaskProvider } from '@/components/TaskContext';
+import { getBoardById } from '@/libs/board';
 import { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -7,8 +8,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
+  const board = await getBoardById(params.slug);
   return {
-    title: `Board View: ${params.slug}`,
+    title: `${board?.title || 'Board View'}`,
     description: 'This is todo list admin dashboard',
   };
 }

@@ -8,35 +8,12 @@ import React, {
   ReactNode,
   useState,
 } from "react";
-import { v4 as uuidv4 } from "uuid";
-import {
-  doc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  updateDoc,
-  collection,
-} from "firebase/firestore";
-import { db } from "@/libs/firebase";
+
 import LoadingPage from "./LoadingPage";
+import { Board, BoardAction, BoardState } from "@/model/board";
+import { deleteBoardById, getBoards, storeBoard, updateBoard } from "@/libs/board";
 
-// --------- Types ---------
-interface Board {
-  id: string;
-  title: string;
-}
 
-interface BoardState {
-  boards: Board[];
-  currentBoard: Board | null;
-}
-
-type BoardAction =
-  | { type: "SET_BOARDS"; payload: Board[] }
-  | { type: "ADD_BOARD"; payload: Board }
-  | { type: "EDIT_BOARD"; payload: Board }
-  | { type: "DELETE_BOARD"; payload: string }
-  | { type: "SET_CURRENT_BOARD"; payload: Board | null };
 
 // --------- Reducer ---------
 const boardReducer = (state: BoardState, action: BoardAction): BoardState => {
@@ -94,10 +71,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   // Load boards on mount
   useEffect(() => {
     const fetchBoards = async () => {
-      const snapshot = await getDocs(collection(db, "boards"));
-      const boards = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as Board)
-      );
+      const boards = await getBoards();
       dispatch({ type: "SET_BOARDS", payload: boards });
       setLoaded(true);
     };
@@ -107,29 +81,20 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
   // Create board
   const createBoard = async (title: string) => {
-    const boardId = uuidv4();
-    const newBoard = { id: boardId, title };
-    await setDoc(doc(db, "boards", boardId), { title });
+    const newBoard = await storeBoard(title);
     dispatch({ type: "ADD_BOARD", payload: newBoard });
   };
 
   // Edit board
   const editBoard = async (boardId: string, newTitle: string) => {
-    const updatedBoard = { id: boardId, title: newTitle };
-    await updateDoc(doc(db, "boards", boardId), { title: newTitle });
+    const updatedBoard = await updateBoard(boardId, newTitle);
     dispatch({ type: "EDIT_BOARD", payload: updatedBoard });
   };
 
   // Delete board and its tasks
   const deleteBoard = async (boardId: string) => {
     try {
-      const tasksRef = collection(db, "boards", boardId, "tasks");
-      const tasksSnap = await getDocs(tasksRef);
-
-      const deleteTasks = tasksSnap.docs.map((doc) => deleteDoc(doc.ref));
-      await Promise.all(deleteTasks);
-
-      await deleteDoc(doc(db, "boards", boardId));
+      await deleteBoardById(boardId);
       dispatch({ type: "DELETE_BOARD", payload: boardId });
     } catch (err) {
       console.error("Error deleting board:", err);

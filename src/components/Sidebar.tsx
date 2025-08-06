@@ -9,7 +9,7 @@ interface SidebarProps{
 };
 
 export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps){
-    const {boards} = useBoard();
+    const {boards, deleteBoard, editBoard} = useBoard();
     const menuItems = [
         // Home Section
         {
@@ -57,7 +57,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps)
                     <button onClick={() => setSidebarOpen(false)} className="md:hidden p-1 text-gray-500 hover:text-gray-800"><X size={24} /></button>
                 </div>
                 <nav className="flex-1 py-6 px-4 space-y-2">
-                    {menuItems.map((item, index) => <SidebarMenuItem item={item} key={index}/>)}
+                    {menuItems.map((item, index) => <SidebarMenuItem item={item} key={index} deleteBoard={deleteBoard} editBoard={editBoard}/>)}
                 </nav>
                 <div className="p-4 border-t border-gray-200"><a href="#" className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100"><Settings size={20} /><span>Settings</span></a></div>
             </aside>

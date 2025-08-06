@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { Ellipsis, Pencil, Trash2,CheckCheck } from 'lucide-react';
 import { JSX, useEffect, useRef, useState } from 'react';
 import { usePathname } from "next/navigation";
 
@@ -11,11 +11,15 @@ interface SidebarMenuItemProps{
         link: string;
         boardId?: string;
     };
+    deleteBoard: (boardId: string) => Promise<void>;
+    editBoard:(boardId: string, newTitle: string) => Promise<void>;
 };
 
-export default function SidebarMenuItem({ item }:SidebarMenuItemProps)
+export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarMenuItemProps)
 {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isRenameOpen, setIsRenameOpen] = useState(false);
+    const [boardTitle, setBoardTitle] = useState(item.name);
     const menuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = pathname === item.link;
@@ -36,17 +40,40 @@ export default function SidebarMenuItem({ item }:SidebarMenuItemProps)
         };
     }, [isMenuOpen]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsRenameOpen(false);
+            }
+        };
+
+        if (isRenameOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isRenameOpen]);
+
     const handleMenuToggle = (e: React.MouseEvent) => {
         setIsMenuOpen(prev => !prev);
     };
 
     const handleEdit = (e: React.MouseEvent) => {
         setIsMenuOpen(false);
+        setIsRenameOpen(true);
     };
 
-    const handleDelete = (e: React.MouseEvent) => {
+    const handleDelete = (boardId:string) => {
+        deleteBoard(boardId)
         setIsMenuOpen(false);
     };
+
+    const handleRename = (e: React.MouseEvent) => {
+        editBoard(item.boardId,boardTitle)
+        setIsRenameOpen(false);
+    }
     return (
         <div
             className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors ${
@@ -67,7 +94,7 @@ export default function SidebarMenuItem({ item }:SidebarMenuItemProps)
                 <Ellipsis size={16} />
                 </button>
                 {isMenuOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-xl z-20 border border-gray-100">
+                <div className="absolute font-normal right-0 mt-1 w-48 bg-white rounded-md shadow-xl z-20 border border-gray-100">
                     <ul className="py-1">
                     <li>
                         <button
@@ -80,8 +107,8 @@ export default function SidebarMenuItem({ item }:SidebarMenuItemProps)
                     </li>
                     <li>
                         <button
-                        onClick={handleDelete}
-                        className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50"
+                        onClick={()=>handleDelete(item.boardId)}
+                        className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                         <Trash2 size={14} className="mr-3" />
                         Delete
@@ -92,6 +119,23 @@ export default function SidebarMenuItem({ item }:SidebarMenuItemProps)
                 )}
             </div>
             )}
+
+            {
+            isRenameOpen && (
+            <div ref={menuRef} className="relative">
+                <div className="absolute flex gap-1 font-normal right-[-48] mt-1 p-1 w-64 bg-white rounded-md shadow-xl z-20 border border-gray-100">
+                    <input id="title" defaultValue={boardTitle} onChange={(e)=>setBoardTitle(e.target.value)} type="text" name="title" placeholder="Rename title" className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                    <button
+                    onClick={handleRename}
+                    className="p-1 text-gray-500 hover:bg-gray-200 rounded opacity-100 transition-opacity"
+                    >
+                    <CheckCheck size={16} />
+                    </button>
+                </div>
+                
+            </div>
+            )
+            }
         </div>
     );
 }
