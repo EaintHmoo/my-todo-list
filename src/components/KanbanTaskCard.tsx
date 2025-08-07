@@ -60,14 +60,12 @@ export default function KanbanTaskCard({ task, isDragging, setOpen, setOpenDelet
     };
 
     const handleEdit = (e: React.MouseEvent) => {
-        console.log("Editing task:", task.id);
         setEditTask(task);
         setIsMenuOpen(false); // Close menu after action
         setOpen(true);
     };
 
     const handleDelete = (e: React.MouseEvent) => {
-        console.log("Deleting task:", task.id);
         setDeleteTask(task);
         setIsMenuOpen(false); // Close menu after action
         setOpenDelete(true);

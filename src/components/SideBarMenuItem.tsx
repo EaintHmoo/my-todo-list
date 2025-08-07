@@ -23,7 +23,6 @@ export default function SidebarMenuItem({ item, deleteBoard,editBoard }:SidebarM
     const menuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const isActive = pathname === item.link;
-    console.log('inside sidebarmenu ', item)
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
